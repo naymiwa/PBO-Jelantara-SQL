@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda Penjual - Jelantara</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #FAFAFA; color: #171717; }
+        .app { max-width: 1140px; margin: 0 auto; padding: 28px 28px 48px; }
+        .card { background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 20px; padding: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .section-title { font-size: 20px; font-weight: 700; margin: 28px 0 14px; }
+        .btn-primary { height: 48px; background: #FFC400; color: #171717; border: none; border-radius: 24px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; width: 100%; }
+        .btn-primary:hover { background: #E5A900; }
+        .btn-kecil { padding: 10px 22px; background: #FFC400; color: #171717; border: none; border-radius: 24px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .btn-kecil:disabled { background: #A3A3A3; color: #FFFFFF; cursor: not-allowed; }
+        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 10px 16px; border: 1px solid #E5E5E5; border-radius: 24px; font-size: 14px; font-family: 'Inter', sans-serif; margin-bottom: 12px; background: #FAFAFA; }
+        textarea { border-radius: 16px; resize: vertical; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #FFC400; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+        .full { grid-column: 1 / -1; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1.4fr; gap: 20px; align-items: stretch; }
+        .grid-2 .card { margin-bottom: 20px; height: 100%; }
+        .saldo-card { background: #FFF8DF; border-color: #FFC400; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .saldo-nilai { font-size: 44px; font-weight: 700; margin: 8px 0; }
+        .saldo-label { font-size: 13px; color: #737373; }
+        .badge-status { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; display: inline-block; }
+        .badge-amber { background: #FEF3C7; color: #92400E; }
+        .badge-hijau { background: #DCFCE7; color: #166534; }
+        .badge-merah { background: #FEE2E2; color: #991B1B; }
+        .badge-role { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 8px; background: #F5F5F5; color: #737373; }
+        .alert { border-radius: 12px; font-size: 14px; padding: 10px 14px; margin-bottom: 16px; }
+        .alert-error { background: #FEE2E2; color: #991B1B; }
+        .alert-sukses { background: #DCFCE7; color: #166534; }
+        .catatan-kecil { font-size: 12px; color: #737373; }
+        table { font-size: 13.5px; }
+        .empty { font-size: 14px; color: #737373; text-align: center; padding: 14px; }
+        .katalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .katalog-grid .card { margin-bottom: 0; }
+        @media (max-width: 900px) {
+            .grid-2, .form-grid { grid-template-columns: 1fr; }
+            .katalog-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFC400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                <div>
+                    <h5 class="mb-0 fw-bold">Halo, <span th:text="${penjual.namaPenjual}">Nama</span></h5>
+                </div>
+                <span class="badge-role">Penjual</span>
+            </div>
+            <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm rounded-pill">Keluar</a>
+        </div>
+
+        <div class="alert alert-sukses" th:if="${param.sukses}" th:text="${param.sukses[0]}"></div>
+        <div class="alert alert-error" th:if="${param.error}" th:text="${param.error[0]}"></div>
+
+        <div class="grid-2">
+            <div class="card saldo-card">
+                <div class="saldo-label">Saldo Poin</div>
+                <div class="saldo-nilai" th:text="${penjual.poin} + ' poin'">0 poin</div>
+                <div class="catatan-kecil">Rumus poin: 30 poin per liter minyak diterima</div>
+            </div>
+            <div class="card">
+                <h3 class="fs-6 fw-bold mb-2">Ajukan Penjemputan</h3>
+                <form th:action="@{/penjual/ajukan}" method="post">
+                    <div class="form-grid">
+                        <div>
+                            <label for="jumlahMinyak">Perkiraan Jumlah Minyak (liter)</label>
+                            <input type="number" step="0.1" min="0.1" id="jumlahMinyak" name="jumlahMinyak" placeholder="Contoh: 15" required>
+                        </div>
+                        <div>
+                            <label for="jenisMinyak">Jenis Minyak</label>
+                            <select id="jenisMinyak" name="jenisMinyak" required>
+                                <option value="Minyak Goreng Bekas">Minyak Goreng Bekas</option>
+                                <option value="Minyak Kelapa Bekas">Minyak Kelapa Bekas</option>
+                            </select>
+                        </div>
+                        <div class="full">
+                            <label for="lokasiPenjemputan">Lokasi Penjemputan</label>
+                            <input type="text" id="lokasiPenjemputan" name="lokasiPenjemputan" th:value="${penjual.alamat}" required>
+                        </div>
+                        <div>
+                            <label for="catatan">Catatan untuk Petugas (opsional)</label>
+                            <textarea id="catatan" name="catatan" rows="2" placeholder="Contoh: Jerigen di samping dapur belakang."></textarea>
+                        </div>
+                        <div>
+                            <label for="foto">Tautan Foto Minyak (opsional)</label>
+                            <input type="text" id="foto" name="foto" placeholder="https://...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">KIRIM PERMINTAAN</button>
+                    <p class="catatan-kecil mt-2">Jumlah yang kamu masukkan adalah estimasi; jumlah final mengikuti hasil pemeriksaan petugas.</p>
+                </form>
+            </div>
+        </div>
+
+        <h2 class="section-title">Transaksi Penjualan</h2>
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Tanggal</th><th>Jenis</th><th>Liter</th><th>Status</th><th>Total Pembayaran</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${listTransaksi}">
+                            <td th:text="'TRX-' + ${t.idTransaksi}">TRX-1</td>
+                            <td th:text="${t.tanggalTransaksi}">2026-01-01</td>
+                            <td th:text="${t.jenisMinyak}">Jenis</td>
+                            <td th:text="${t.jumlahMinyak} + ' L'">15 L</td>
+                            <td><span class="badge-status" th:classappend="${t.status == 'berhasil'} ? 'badge-hijau' : (${t.status == 'ditolak'} ? 'badge-merah' : 'badge-amber')" th:text="${t.status == 'berhasil'} ? 'Berhasil' : (${t.status == 'ditolak'} ? 'Ditolak' : 'Menunggu pemeriksaan')">Menunggu</span></td>
+                            <td th:if="${t.totalHarga != null}" th:text="'Rp' + ${#numbers.formatInteger(t.totalHarga, 0, 'POINT')}">Rp60.000</td>
+                            <td th:if="${t.totalHarga == null}">-</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(listTransaksi)}">
+                            <td colspan="6" class="empty">Belum ada transaksi. Mulai dengan mengajukan penjemputan.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2 class="section-title">Katalog Reward</h2>
+        <div class="katalog-grid">
+            <div class="card" th:each="p : ${listProduk}" style="margin-bottom: 20px;">
+                <h3 class="fs-6 fw-bold mb-1" th:text="${p.namaProduk}">Nama Produk</h3>
+                <p class="catatan-kecil mb-2" th:text="${p.deskripsi}">Deskripsi</p>
+                <p class="mb-1 fw-bold fs-5" th:text="${p.hargaPoin} + ' poin'">0 poin</p>
+                <p class="catatan-kecil" th:text="'Stok: ' + ${p.stok}">Stok: 0</p>
+                <form th:action="@{/penjual/tukar}" method="post" class="mt-2">
+                    <input type="hidden" name="produkId" th:value="${p.idProduk}">
+                    <label>Alamat Pengantaran</label>
+                    <input type="text" name="alamatPengantaran" th:value="${penjual.alamat}" required>
+                    <button type="submit" class="btn-kecil mt-1" th:disabled="${p.stok == 0}" th:text="${p.stok == 0} ? 'Stok habis' : 'Tukar Poin'">Tukar Poin</button>
+                </form>
+            </div>
+            <div class="card" th:if="${#lists.isEmpty(listProduk)}">
+                <p class="empty mb-0">Katalog reward masih kosong.</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Riwayat Penukaran</h2>
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr><th>ID</th><th>Tanggal</th><th>Produk</th><th>Poin</th><th>Alamat Pengantaran</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="k : ${listPenukaran}">
+                            <td th:text="'PRK-' + ${k.idPenukaran}">PRK-1</td>
+                            <td th:text="${k.tglPenukaran}">2026-01-01</td>
+                            <td th:text="${k.produk.namaProduk}">Produk</td>
+                            <td th:text="${k.jumlahPoin} + ' poin'">0 poin</td>
+                            <td th:text="${k.alamatPengantaran}">Alamat</td>
+                            <td><span class="badge-status badge-amber">Diproses</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(listPenukaran)}">
+                            <td colspan="6" class="empty">Belum ada penukaran poin.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

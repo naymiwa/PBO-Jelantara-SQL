@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - Jelantara</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #FAFAFA; color: #171717; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px; }
+        .layout { display: flex; width: 100%; max-width: 960px; background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+        .panel-kiri { flex: 1; background: #FFF8DF; padding: 48px 40px; display: flex; flex-direction: column; justify-content: center; }
+        .panel-kanan { flex: 1.2; padding: 48px 40px; display: flex; flex-direction: column; justify-content: center; }
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+        .logo-name { font-size: 30px; font-weight: 800; }
+        .tagline { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+        .sub { font-size: 15px; color: #737373; margin-bottom: 20px; }
+        .akun-demo { background: #FFFFFF; border: 1px dashed #FFC400; border-radius: 12px; padding: 14px 16px; }
+        .akun-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+        .akun-baris { font-size: 13px; margin-bottom: 6px; font-family: 'Consolas', monospace; }
+        .akun-role { display: inline-block; font-weight: 700; font-family: 'Inter', sans-serif; min-width: 70px; }
+        .akun-catatan { font-size: 12px; color: #737373; margin-top: 4px; }
+        .role-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .role-btn { flex: 1; padding: 12px 0; border-radius: 10px; border: 1px solid #E5E5E5; background: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer; color: #171717; font-family: 'Inter', sans-serif; }
+        .role-btn.active { border-color: #FFC400; background: #FFF8DF; }
+        .form-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+        input { width: 100%; padding: 13px 18px; border: 1px solid #E5E5E5; border-radius: 24px; font-size: 15px; font-family: 'Inter', sans-serif; margin-bottom: 18px; background: #FAFAFA; }
+        input:focus { outline: none; border-color: #FFC400; }
+        .btn-primary { width: 100%; height: 50px; background: #FFC400; color: #171717; border: none; border-radius: 24px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn-primary:hover { background: #E5A900; }
+        .alert { border-radius: 8px; font-size: 14px; padding: 10px 12px; margin-bottom: 12px; }
+        .alert-error { background: #FEE2E2; color: #991B1B; }
+        .alert-sukses { background: #DCFCE7; color: #166534; }
+        .link-daftar { font-size: 13px; color: #737373; margin-top: 16px; }
+        @media (max-width: 800px) {
+            .layout { flex-direction: column; }
+            .panel-kiri, .panel-kanan { padding: 28px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <div class="panel-kiri">
+            <div class="logo">
+                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#E5A900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                <div class="logo-name">Jelantara</div>
+            </div>
+            <h1 class="tagline">Kelola Jelantah,<br>Raih Berkah</h1>
+            <p class="sub">Masuk untuk melanjutkan ke Jelantara.</p>
+            <div class="akun-demo">
+                <div class="akun-title">Akun Demo (Petugas &amp; Pusat)</div>
+                <div class="akun-baris"><span class="akun-role">Petugas</span> petugas@mail.com &nbsp;/&nbsp; petugas123</div>
+                <div class="akun-baris"><span class="akun-role">Pusat</span> pusat@mail.com &nbsp;/&nbsp; pusat123</div>
+                <div class="akun-catatan">Penjual: cukup masukkan email &amp; kata sandi apa pun di form sebelah kanan, akunnya dibuat otomatis.</div>
+            </div>
+        </div>
+        <div class="panel-kanan">
+            <div class="role-selector">
+                <button type="button" class="role-btn active" onclick="pilihRole(this, 'Penjual')">Penjual</button>
+                <button type="button" class="role-btn" onclick="pilihRole(this, 'Petugas')">Petugas</button>
+                <button type="button" class="role-btn" onclick="pilihRole(this, 'Pusat')">Pusat</button>
+            </div>
+            <p class="form-title" id="formTitle">Masuk sebagai Penjual</p>
+
+            <div class="alert alert-error" th:if="${param.error}" th:text="${param.error[0]}"></div>
+            <div class="alert alert-sukses" th:if="${param.sukses}" th:text="${param.sukses[0]}"></div>
+
+            <form th:action="@{/login}" method="post">
+                <label for="email">Email / No. Handphone</label>
+                <input type="email" id="email" name="email" placeholder="nama@email.com" required>
+                <label for="password">Kata Sandi</label>
+                <input type="password" id="password" name="password" placeholder="Masukkan kata sandi" required>
+                <button type="submit" class="btn-primary">MASUK KE SISTEM</button>
+            </form>
+
+            <p class="link-daftar">Akun Penjual otomatis dibuat saat masuk dengan email &amp; kata sandi apa pun.</p>
+        </div>
+    </div>
+
+    <script>
+        function pilihRole(btn, namaRole) {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('formTitle').textContent = 'Masuk sebagai ' + namaRole;
+        }
+    </script>
+</body>
+</html>
